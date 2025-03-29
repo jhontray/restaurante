@@ -1,8 +1,8 @@
-package vista;
+package Vista;
 
 import Conexion.ConexionDB;
-import controlador.ClientesDao;
-import modelo.Clientes;
+import Controlador.ClientesDao;
+import Modelo.Clientes;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -140,7 +140,7 @@ public class ClientesGUI {
     }
     public static void main (String[]args)
     {
-        JFrame frame = new JFrame("ClienteGUI");
+        JFrame frame = new JFrame("ClientesGUI");
         frame.setContentPane(new ClientesGUI().main);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
