@@ -3,6 +3,8 @@ package vista;
 import Conexion.ConexionDB;
 import Controlador.ClientesDao;
 import Modelo.Clientes;
+import controlador.EmpleadosDAO;
+import modelo.Empleados;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -15,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class ClientesGUI {
+public class EmpleadosGUI {
     private JPanel main;
     private JTable table1;
     private JTextField textField1;
@@ -27,22 +29,22 @@ public class ClientesGUI {
     private JButton eliminarButton;
 
 
-    ClientesDao clientesDAO=new ClientesDao();
+    EmpleadosDAO empleadosDAO =new EmpleadosDAO();
     /*
-     ESTE CODIGO DE AGREGARBUTTON NOS SIRVE PARA AGREGAR REGSTRO DESDE EL GUI A LA BASE DE DATOS
+     ESTE CODIGO DE AGREGARBUTTON NOS SIRVE PARA AGREGAR REGSiTRO DESDE EL GUI A LA BASE DE DATOS
      USANDO LOS BOTONES DE AGREGAR Y LLENANDO LOS CAMPOS DE LA APP
       */
-    public ClientesGUI() {
+    public EmpleadosGUI() {
         obtenerDatos();
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre= textField2.getText();
-                String telefono= textField3.getText();
-                String correo= textField4.getText();
+                String nombre= textField1.getText();
+                String cargo = textField2.getText();
+                String salario= textField3.getText();
 
-                Clientes clientes=new Clientes(1,nombre,telefono,correo);
-                clientesDAO.agregar(clientes);
+                Empleados empleados=new Empleados(1,nombre,salario, cargo);
+                EmpleadosDAO.agregar(empleados);
 
 
                 obtenerDatos();
@@ -57,14 +59,14 @@ public class ClientesGUI {
         editarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre= textField2.getText();
-                String telefono= textField3.getText();
-                String correo= textField4.getText();
+                String nombre= textField1.getText();
+                String cargo = textField2.getText();
+                String salario= textField3.getText();
                 int id = Integer.parseInt(textField1.getText());
 
 
-                Clientes clientes=new Clientes(id,nombre,telefono,correo);
-                clientesDAO.actualizar(clientes);
+                Empleados empleados=new Empleados(id,nombre,cargo,salario);
+                EmpleadosDAO.actualizar(empleados);
 
                 obtenerDatos();
 
@@ -79,7 +81,7 @@ public class ClientesGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int id=Integer.parseInt(textField1.getText());
-                clientesDAO.eliminar (id);
+                EmpleadosDAO.eliminar (id);
                 obtenerDatos();
 
             }
@@ -111,10 +113,10 @@ public class ClientesGUI {
     public void obtenerDatos() {
         DefaultTableModel model = new DefaultTableModel();
 
-        model.addColumn("ID Cliente");
+        model.addColumn("ID Empleados");
         model.addColumn("Nombre");
-        model.addColumn("Telefono");
-        model.addColumn("Correo");
+        model.addColumn("Salario");
+        model.addColumn("Cargo");
 
         table1.setModel(model);
 
@@ -140,13 +142,10 @@ public class ClientesGUI {
     }
     public static void main (String[]args)
     {
-        JFrame frame = new JFrame("ClientesGUI");
-        frame.setContentPane(new ClientesGUI().main);
+        JFrame frame = new JFrame("EmpleadoGUI");
+        frame.setContentPane(new EmpleadosGUI().main);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
     }
 }
-
-
-

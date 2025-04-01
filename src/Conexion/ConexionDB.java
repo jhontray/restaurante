@@ -9,7 +9,7 @@ public class ConexionDB
 
         // * ESTE CODIGO NOS PERMITE HACER UNA CONEXION CON LA BASE DE DATOS MANEJADA DESDE PHPMYADMIN(XAMPP)
 
-{ public Connection getConnection()
+{ public static Connection getConnection()
 {
     Connection con =null;
     try

@@ -1,8 +1,8 @@
-package Controlador;
+package controlador;
 
 import Conexion.ConexionDB;
 
-import Modelo.Clientes;
+import modelo.Clientes;
 
 import javax.swing.*;
 import java.sql.Connection;
