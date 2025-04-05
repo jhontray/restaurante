@@ -1,4 +1,4 @@
-package vista;
+package Vista;
 
 import Conexion.ConexionDB;
 import Controlador.ClientesDao;

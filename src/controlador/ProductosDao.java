@@ -1,4 +1,4 @@
-package controlador;
+package Controlador;
 
 import Conexion.ConexionDB;
 
