@@ -2,7 +2,6 @@ package Controlador;
 
 import Conexion.ConexionDB;
 
-import Modelo.Clientes;
 import Modelo.Productos;
 
 import javax.swing.*;
