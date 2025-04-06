@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 05-04-2025 a las 06:59:42
+-- Tiempo de generación: 07-04-2025 a las 01:20:18
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -39,7 +39,10 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`id_cliente`, `nombre`, `telefono`, `correo`) VALUES
-(1, 'juan', '3156485', 'asdfawe@sdafgsr.com');
+(1, 'juan', '3156485', 'asdfawe@sdafgsr.com'),
+(2, 'juan', '31231', 'nosdfef'),
+(4, 'ederec', '31231', 'nosdfefdd'),
+(5, 'ederecd', '31231', 'nosdfefddd');
 
 -- --------------------------------------------------------
 
@@ -54,6 +57,17 @@ CREATE TABLE `empleado` (
   `salario` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
 
+--
+-- Volcado de datos para la tabla `empleado`
+--
+
+INSERT INTO `empleado` (`id_empleado`, `nombre`, `cargo`, `salario`) VALUES
+(1, 'Juan P?rez', 'Mesero', 12000.00),
+(2, 'Ana Mart?nez', 'Mesera', 3500.00),
+(3, 'Carlos G?mez', 'Chef', 5000.00),
+(4, 'Luisa P?rez', 'Cajera', 3200.00),
+(5, 'Roberto D?az', 'Administrador', 6000.00);
+
 -- --------------------------------------------------------
 
 --
@@ -67,6 +81,17 @@ CREATE TABLE `mesa` (
   `estado` enum('Disponible','Ocupada','Reservada','Mantenimiento') DEFAULT 'Disponible'
 ) ;
 
+--
+-- Volcado de datos para la tabla `mesa`
+--
+
+INSERT INTO `mesa` (`id_mesa`, `numero`, `capacidad`, `estado`) VALUES
+(1, 1, 4, 'Disponible'),
+(7, 2, 2, 'Ocupada'),
+(8, 3, 6, 'Reservada'),
+(9, 4, 4, 'Disponible'),
+(10, 5, 8, 'Mantenimiento');
+
 -- --------------------------------------------------------
 
 --
@@ -76,12 +101,20 @@ CREATE TABLE `mesa` (
 CREATE TABLE `orden` (
   `id_orden` int(11) NOT NULL,
   `fecha` datetime DEFAULT current_timestamp(),
-  `total` decimal(10,2) NOT NULL,
-  `estado` enum('En preparaci?n','Servida','Pagada') DEFAULT 'En preparaci?n',
+  `total` double NOT NULL DEFAULT 0,
+  `estado` enum('preparacion','servido','pago') DEFAULT 'preparacion',
   `id_cliente` int(11) DEFAULT NULL,
   `id_empleado` int(11) DEFAULT NULL,
   `id_mesa` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `orden`
+--
+
+INSERT INTO `orden` (`id_orden`, `fecha`, `total`, `estado`, `id_cliente`, `id_empleado`, `id_mesa`) VALUES
+(7, '2025-04-06 14:50:40', 0, 'preparacion', 2, 3, 10),
+(17, '2025-04-06 18:16:15', 0, 'servido', 1, 5, 9);
 
 -- --------------------------------------------------------
 
@@ -95,6 +128,46 @@ CREATE TABLE `orden_producto` (
   `cantidad` int(11) NOT NULL,
   `precio_unitario` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
+
+--
+-- Disparadores `orden_producto`
+--
+DELIMITER $$
+CREATE TRIGGER `actualizar_total_delete` AFTER DELETE ON `orden_producto` FOR EACH ROW BEGIN
+  UPDATE orden
+  SET total = (
+    SELECT IFNULL(SUM(precio_unitario * cantidad), 0)
+    FROM orden_producto
+    WHERE id_orden = OLD.id_orden
+  )
+  WHERE id_orden = OLD.id_orden;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `actualizar_total_insert` AFTER INSERT ON `orden_producto` FOR EACH ROW BEGIN
+  UPDATE orden
+  SET total = (
+    SELECT SUM(precio_unitario * cantidad)
+    FROM orden_producto
+    WHERE id_orden = NEW.id_orden
+  )
+  WHERE id_orden = NEW.id_orden;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `actualizar_total_update` AFTER UPDATE ON `orden_producto` FOR EACH ROW BEGIN
+  UPDATE orden
+  SET total = (
+    SELECT SUM(precio_unitario * cantidad)
+    FROM orden_producto
+    WHERE id_orden = NEW.id_orden
+  )
+  WHERE id_orden = NEW.id_orden;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -171,13 +244,13 @@ ALTER TABLE `productos`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `mesa`
@@ -189,7 +262,7 @@ ALTER TABLE `mesa`
 -- AUTO_INCREMENT de la tabla `orden`
 --
 ALTER TABLE `orden`
-  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
