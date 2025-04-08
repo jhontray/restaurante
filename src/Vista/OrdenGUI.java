@@ -7,7 +7,6 @@ import Conexion.ConexionDB;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.xml.transform.Result;
 import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -17,7 +16,7 @@ import java.sql.Statement;
 public class OrdenGUI {
     private JPanel main;
     private JButton agregarButton;
-    private JButton atualizarButton;
+    private JButton actualizarButton;
     private JButton eliminarButton;
     private JTable table1;
     private JTextField textField1;
