@@ -141,8 +141,8 @@ public class ProductosGUI {
 
         model.addColumn("Id Producto");
         model.addColumn("Nombre");
-        model.addColumn("Precio");
-        model.addColumn("Categoria");
+        model.addColumn("categoria");
+        model.addColumn("precio");
         model.addColumn("Disponibilidad");
 
         table1.setModel(model);
