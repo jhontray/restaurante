@@ -128,6 +128,9 @@ public class ProductosGUI {
 
     ConexionDB conexionDB = new ConexionDB();
 
+    /*codigo para almacenar los datos y obtener todos lo datos de la DB
+    */
+
     public void obtenerDatos() {
 
         /*diseño de la tabla de datos gui

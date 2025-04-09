@@ -2,7 +2,7 @@ package Vista;
 import Modelo.Orden;
 import Controlador.OrdenDao;
 import Conexion.ConexionDB;
-
+import Modelo.Productos;
 
 
 import javax.swing.*;
@@ -47,8 +47,6 @@ public class OrdenGUI {
                     int id_mesa = Integer.parseInt(textField4.getText());
                     String estado = ((String) comboBox1.getSelectedItem()).trim();
 
-                    System.out.println("Estado seleccionado: '" + estado + "'");
-
                     Orden orden = new Orden(0,id_cliente, id_Empleado, id_mesa,estado);
                     ordenDao.agregar(orden);
 
@@ -59,6 +57,43 @@ public class OrdenGUI {
             }
         });
 
+        /*funcion para atualizar los datos en la orden en la DB
+         */
+
+        actualizarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int id_cliente = Integer.parseInt(textField2.getText());
+                int id_Empleado = Integer.parseInt(textField3.getText());
+                int id_mesa = Integer.parseInt(textField4.getText());
+                String estado = ((String) comboBox1.getSelectedItem()).trim();
+
+                int id = Integer.parseInt(textField1.getText());
+
+
+                Orden orden = new Orden(id,id_cliente,id_Empleado,id_mesa,estado);
+                ordenDao.atualizar(orden);
+
+                obtenerDatos();
+
+            }
+        });
+
+        /*funcion para eliminar una orden de la DB
+        */
+
+        eliminarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int id = Integer.parseInt(textField1.getText());
+                ordenDao.eliminar(id);
+                obtenerDatos();
+
+            }
+        });
+
+        /* funcion para selecionar datos diretamente de la tabla con los registro de la DB
+        */
 
         table1.addMouseListener(new MouseAdapter() {
             @Override
@@ -73,17 +108,15 @@ public class OrdenGUI {
                     textField4.setText((String) table1.getValueAt(selecFile, 6)); // id_mesa
                     comboBox1.setSelectedItem((String) table1.getValueAt(selecFile, 3)); // estado
 
-
-
-
-
-
                 }
             }
         });
     }
 
     ConexionDB conexionDB=new ConexionDB();
+
+    /*codigo para almacenar los datos y obtener todos lo datos de la DB
+    */
 
     public void obtenerDatos(){
 

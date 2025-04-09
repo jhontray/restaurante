@@ -1,5 +1,7 @@
 package Modelo;
-
+/*
+ESTE MODELO NOS SIRVE PARA TRAER Y ENVIAR INFORMACION A LA DB DESDE INTELLIJ
+**/
 public class Orden {
     int id_orden;
     int id_cliente;
@@ -14,6 +16,9 @@ public class Orden {
         this.id_mesa = id_mesa;
         this.estado = estado;
     }
+
+    /* Getters y Setters*/
+
 
     public int getId_orden() {
         return id_orden;

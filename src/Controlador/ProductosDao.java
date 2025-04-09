@@ -75,8 +75,7 @@ public class ProductosDao {
             JOptionPane.showMessageDialog(null, "ERROR  EN LA EJECUCION");
         }
     }
-    //AGREGAR
-    /*
+    /*Eliminar
     ELIMINAR INFORMACION EN LA TABLA PRODUTOS DESDE GUI
     */
     public void eliminar(int id) {

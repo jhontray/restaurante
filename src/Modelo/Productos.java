@@ -19,6 +19,8 @@ public class Productos{
 
     }
 
+    /* Getters y Setters*/
+
     public int getId_Productos(){return id_productos;}
     public void  setId_Productos(int id_productos){this.id_productos = id_productos;}
 
