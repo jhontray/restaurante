@@ -126,6 +126,12 @@ public class ProductosGUI {
         });
     }
 
+    /*permite aceso en  en la interfa menugui
+     */
+    public JPanel getPanel(){
+        return main;
+    }
+
     ConexionDB conexionDB = new ConexionDB();
 
     /*codigo para almacenar los datos y obtener todos lo datos de la DB

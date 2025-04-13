@@ -59,7 +59,7 @@ public class Ordenes_ProductosGUI {
     private void cargarComboOrdenes() {
         try (Connection con = conexionDB.getConnection();
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id_orden FROM ordenes")) {
+             ResultSet rs = stmt.executeQuery("SELECT id_orden FROM orden")) {
 
             while (rs.next()) {
                 comboOrdenes.addItem(rs.getInt("id_orden"));
@@ -160,13 +160,18 @@ public class Ordenes_ProductosGUI {
         }
     }
 
+    /*permite aceso en  en la interfa menugui
+     */
+    public JPanel getPanel(){
+        return main;
+    }
 
     /**
      * Guarda todos los productos agregados temporalmente en la base de datos
      */
     private void guardarOrdenEnBD() {
         try (Connection con = conexionDB.getConnection()) {
-            String sql = "INSERT INTO ordenes_productos (id_orden, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO orden_producto (id_orden, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
 
             for (Ordenes_Productos op : listaOrdenTemporal) {

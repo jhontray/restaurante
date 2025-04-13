@@ -112,6 +112,11 @@ public class OrdenGUI {
             }
         });
     }
+    /*permite aceso en  en la interfa menugui
+     */
+    public JPanel getPanel(){
+        return main;
+    }
 
     ConexionDB conexionDB=new ConexionDB();
 
@@ -138,7 +143,7 @@ public class OrdenGUI {
 
         try{
             Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Orden");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM orden");
 
             while(rs.next()){
 
