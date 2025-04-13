@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-04-2025 a las 01:20:18
+-- Tiempo de generación: 13-04-2025 a las 20:28:23
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -113,8 +113,8 @@ CREATE TABLE `orden` (
 --
 
 INSERT INTO `orden` (`id_orden`, `fecha`, `total`, `estado`, `id_cliente`, `id_empleado`, `id_mesa`) VALUES
-(7, '2025-04-06 14:50:40', 0, 'preparacion', 2, 3, 10),
-(17, '2025-04-06 18:16:15', 0, 'servido', 1, 5, 9);
+(7, '2025-04-06 14:50:40', 10000, 'preparacion', 2, 3, 10),
+(17, '2025-04-06 18:16:15', 0, 'preparacion', 5, 3, 10);
 
 -- --------------------------------------------------------
 
@@ -128,6 +128,14 @@ CREATE TABLE `orden_producto` (
   `cantidad` int(11) NOT NULL,
   `precio_unitario` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `orden_producto`
+--
+
+INSERT INTO `orden_producto` (`id_orden`, `id_producto`, `cantidad`, `precio_unitario`) VALUES
+(7, 1, 2, 0.00),
+(7, 2, 2, 5000.00);
 
 --
 -- Disparadores `orden_producto`
@@ -188,7 +196,9 @@ CREATE TABLE `productos` (
 --
 
 INSERT INTO `productos` (`id_producto`, `nombre`, `categoria`, `precio`, `disponibilidad`) VALUES
-(1, 'hamburguesa doble', 'comida', 5000.00, 1);
+(1, 'hamburguesa doble', 'comida', 5000.00, 1),
+(2, 'hamburguesa triple', 'comida', 5000.00, 0),
+(4, 'perro caliente', 'comida', 2000.00, 1);
 
 --
 -- Índices para tablas volcadas
@@ -262,13 +272,13 @@ ALTER TABLE `mesa`
 -- AUTO_INCREMENT de la tabla `orden`
 --
 ALTER TABLE `orden`
-  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_orden` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `productos`
 --
 ALTER TABLE `productos`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
