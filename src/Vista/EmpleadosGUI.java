@@ -25,6 +25,9 @@ public class EmpleadosGUI {
     private JButton agregarButton;
     private JButton editarButton;
     private JButton eliminarButton;
+    private JButton agregarButtonButton;
+    private JButton editarButtonButton;
+    private JCheckBox checkBox1;
 
 
     EmpleadosDao empleadosDao = new EmpleadosDao();
