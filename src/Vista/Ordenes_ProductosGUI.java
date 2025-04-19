@@ -22,69 +22,60 @@ public class Ordenes_ProductosGUI {
     private JTextField textFieldNombreProducto;  // Campo de texto para mostrar el nombre del producto seleccionado
     private JTable mostrarBD;  // Tabla para mostrar los registros guardados en la base de datos
     private JButton eliminarBDButton;  // Botón para eliminar un registro de la base de datos
+    private JButton refrescarOrdenesButton;  // Botón para refrescar las órdenes
 
-    // Modelos de las tablas
-    private DefaultTableModel tableModel;  // Modelo de la tabla para la orden temporal
-    private DefaultTableModel tableModelMostrarBD;  // Modelo de la tabla para mostrar los datos de la base de datos
-
-    /*
-    / Conexión a la base de datos
-     */
+    // Conexión a la base de datos
     private ConexionDB conexionDB = new ConexionDB();
     private ArrayList<Ordenes_Productos> listaOrdenTemporal = new ArrayList<>();  // Lista temporal de productos en la orden
 
     public Ordenes_ProductosGUI() {
-        /*
-        / Inicializa los modelos de las tablas
-         */
-        tableModel = new DefaultTableModel(new Object[]{"Producto", "Cantidad", "Precio", "Subtotal"}, 0);
-        tableOrden.setModel(tableModel);
+        // Inicializa las tablas con DefaultTableModel y agrega las columnas
+        DefaultTableModel tableModelOrden = new DefaultTableModel();
+        tableModelOrden.addColumn("Producto");
+        tableModelOrden.addColumn("Cantidad");
+        tableModelOrden.addColumn("Precio");
+        tableModelOrden.addColumn("Subtotal");
+        tableOrden.setModel(tableModelOrden);
 
-        tableModelMostrarBD = new DefaultTableModel(new Object[]{"ID Orden", "ID Producto", "Cantidad", "Precio Unitario", "Subtotal"}, 0);
+        DefaultTableModel tableModelMostrarBD = new DefaultTableModel();
+        tableModelMostrarBD.addColumn("ID Orden");
+        tableModelMostrarBD.addColumn("ID Producto");
+        tableModelMostrarBD.addColumn("Cantidad");
+        tableModelMostrarBD.addColumn("Precio Unitario");
+        tableModelMostrarBD.addColumn("Subtotal");
         mostrarBD.setModel(tableModelMostrarBD);
 
-        /*
-        / Cargar los datos de órdenes y productos desde la base de datos
-         */
+        // Cargar los datos de órdenes y productos desde la base de datos
         cargarComboOrdenes();
         cargarComboProductos();
         cargarDatosEnTablaMostrarBD();
 
-        /*
-        / Acción para cargar los datos del producto seleccionado en el combo
-         */
+        // Acción para cargar los datos del producto seleccionado en el combo
         comboProductos.addActionListener(e -> cargarDatosProductoSeleccionado());
 
-        /*
-        / Acción para agregar un producto a la tabla
-         */
-        agregarButton.addActionListener(e -> agregarProductoATabla());
+        // Acción para agregar un producto a la tabla
+        agregarButton.addActionListener(e -> agregarProductoATabla(tableModelOrden));
 
-        /*
-        / Acción para eliminar un producto de la tabla
-         */
-        eliminarSeleccionadoButton.addActionListener(e -> eliminarProductoSeleccionado());
+        // Acción para eliminar un producto de la tabla
+        eliminarSeleccionadoButton.addActionListener(e -> eliminarProductoSeleccionado(tableModelOrden));
 
-        /*
-        / Acción para guardar la orden en la base de datos
-         */
+        // Acción para guardar la orden en la base de datos
         guardarOrdenButton.addActionListener(e -> guardarOrdenEnBD());
 
-        /*
-        / Acción para eliminar un registro de la base de datos
-         */
+        // Acción para eliminar un registro de la base de datos
         eliminarBDButton.addActionListener(e -> eliminarRegistroBD());
 
-        /*
-        / Deshabilita la edición del nombre del producto
-         */
+        // Acción para refrescar el combo de órdenes con el botón
+        refrescarOrdenesButton.addActionListener(e -> cargarComboOrdenes());
+
+        // Deshabilita la edición del nombre del producto
         textFieldNombreProducto.setEditable(false);
     }
 
-    /*
-    / Método para cargar las órdenes en el JComboBox
-     */
+    // Método para cargar las órdenes en el JComboBox
     private void cargarComboOrdenes() {
+        comboOrdenes.removeAllItems();  // Limpia el combo antes de recargar
+
         try (Connection con = conexionDB.getConnection();
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT id_orden FROM orden")) {
@@ -97,9 +88,7 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /*
-    / Método para cargar los productos en el JComboBox
-     */
+    // Método para cargar los productos en el JComboBox
     private void cargarComboProductos() {
         try (Connection con = conexionDB.getConnection();
              Statement stmt = con.createStatement();
@@ -113,9 +102,7 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /*
-    / Método para cargar los detalles del producto seleccionado en los campos de texto
-     */
+    // Método para cargar los detalles del producto seleccionado en los campos de texto
     private void cargarDatosProductoSeleccionado() {
         Integer idProducto = (Integer) comboProductos.getSelectedItem();
         if (idProducto == null) return;
@@ -138,10 +125,8 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /*
-    / Método para agregar un producto a la tabla temporal
-     */
-    private void agregarProductoATabla() {
+    // Método para agregar un producto a la tabla
+    private void agregarProductoATabla(DefaultTableModel tableModel) {
         try {
             Integer idOrden = (Integer) comboOrdenes.getSelectedItem();
             if (idOrden == null) {
@@ -160,7 +145,13 @@ public class Ordenes_ProductosGUI {
             double subtotal = cantidad * precio;
 
             // Agrega el producto a la tabla temporal y la lista
-            tableModel.addRow(new Object[]{idProducto, cantidad, precio, subtotal});
+            String[] dato = new String[4];
+            dato[0] = String.valueOf(idProducto);
+            dato[1] = String.valueOf(cantidad);
+            dato[2] = String.valueOf(precio);
+            dato[3] = String.valueOf(subtotal);
+            tableModel.addRow(dato);
+
             listaOrdenTemporal.add(new Ordenes_Productos(idOrden, idProducto, cantidad, precio));
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Por favor ingresa valores válidos.");
@@ -168,7 +159,7 @@ public class Ordenes_ProductosGUI {
     }
 
     // Método para eliminar un producto seleccionado de la tabla
-    private void eliminarProductoSeleccionado() {
+    private void eliminarProductoSeleccionado(DefaultTableModel tableModel) {
         int selectedRow = tableOrden.getSelectedRow();
         if (selectedRow >= 0) {
             int confirm = JOptionPane.showConfirmDialog(null,
@@ -185,9 +176,7 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /*
-    / Método para guardar la orden en la base de datos
-     */
+    // Método para guardar la orden en la base de datos
     private void guardarOrdenEnBD() {
         try (Connection con = conexionDB.getConnection()) {
 
@@ -197,7 +186,7 @@ public class Ordenes_ProductosGUI {
                     "cantidad = cantidad + VALUES(cantidad), " +
                     "precio_unitario = VALUES(precio_unitario)";
 
-             PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql);
 
             // Inserta los productos de la orden en la base de datos
             for (Ordenes_Productos op : listaOrdenTemporal) {
@@ -210,8 +199,6 @@ public class Ordenes_ProductosGUI {
 
             ps.executeBatch();  // Ejecuta el batch para insertar todos los registros
             JOptionPane.showMessageDialog(null, "Orden guardada correctamente.");
-            tableModel.setRowCount(0);  // Limpia la tabla temporal
-            listaOrdenTemporal.clear();  // Limpia la lista temporal
             cargarDatosEnTablaMostrarBD();  // Recarga los datos en la tabla que muestra la base de datos
 
         } catch (SQLException e) {
@@ -220,11 +207,10 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /*
-    / Método para cargar los datos de la base de datos en la tabla de la interfaz
-     */
+    // Método para cargar los datos de la base de datos en la tabla de la interfaz
     private void cargarDatosEnTablaMostrarBD() {
-        tableModelMostrarBD.setRowCount(0);
+        DefaultTableModel modelMostrarBD = (DefaultTableModel) mostrarBD.getModel();
+        modelMostrarBD.setRowCount(0);  // Limpiar la tabla antes de cargar nuevos datos
 
         String sql = "SELECT * FROM orden_producto";
 
@@ -240,7 +226,13 @@ public class Ordenes_ProductosGUI {
                 double precioUnitario = rs.getDouble("precio_unitario");
                 double subtotal = cantidad * precioUnitario;
 
-                tableModelMostrarBD.addRow(new Object[]{idOrden, idProducto, cantidad, precioUnitario, subtotal});
+                String[] dato = new String[5];
+                dato[0] = String.valueOf(idOrden);
+                dato[1] = String.valueOf(idProducto);
+                dato[2] = String.valueOf(cantidad);
+                dato[3] = String.valueOf(precioUnitario);
+                dato[4] = String.valueOf(subtotal);
+                modelMostrarBD.addRow(dato);
             }
 
         } catch (SQLException e) {
@@ -248,9 +240,7 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /*
-    / Método para eliminar un registro de la base de datos
-     */
+    // Método para eliminar un registro de la base de datos
     private void eliminarRegistroBD() {
         int selectedRow = mostrarBD.getSelectedRow();
         if (selectedRow >= 0) {
@@ -273,7 +263,8 @@ public class Ordenes_ProductosGUI {
                     int rowsAffected = pst.executeUpdate();  // Elimina el registro de la base de datos
                     if (rowsAffected > 0) {
                         JOptionPane.showMessageDialog(null, "Registro eliminado correctamente.");
-                        tableModelMostrarBD.removeRow(selectedRow);  // Elimina el registro de la tabla
+                        DefaultTableModel modelMostrarBD = (DefaultTableModel) mostrarBD.getModel();
+                        modelMostrarBD.removeRow(selectedRow);  // Elimina el registro de la tabla
                     } else {
                         JOptionPane.showMessageDialog(null, "No se encontró el registro.");
                     }
@@ -293,9 +284,7 @@ public class Ordenes_ProductosGUI {
         return main;
     }
 
-    /*
-    / Método main para ejecutar la interfaz
-     */
+    // Método main para ejecutar la interfaz
     public static void main(String[] args) {
         JFrame frame = new JFrame("Ordenes_ProductosGUI");
         frame.setContentPane(new Ordenes_ProductosGUI().main);
