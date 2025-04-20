@@ -1,10 +1,10 @@
 package Vista;
 
+import SERVER.MainMenu; // Importa la clase MainMenu del chat
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
 
 public class MenuGUI {
 
@@ -15,19 +15,18 @@ public class MenuGUI {
     private JButton pedidosButton;
     private JButton produtosButton;
     private JButton empleadosButton;
+    private JButton chatButton; // El botón del chat
 
     private JPanel contenedorPanel;
+    private MainMenu chatMainMenu; // Instancia de MainMenu
 
     public MenuGUI(){
 
         /*permitiendo cambiar entre diferentes vistas*/
+        contenedorPanel.setLayout(new CardLayout());
 
-       contenedorPanel.setLayout(new CardLayout());
-
-
-       /*se crea para ver la interfas del correspondiente gui*/
-
-       ClientesGUI clientesGUI =new ClientesGUI();
+        /*se crea para ver la interfas del correspondiente gui*/
+        ClientesGUI clientesGUI =new ClientesGUI();
         contenedorPanel.add(clientesGUI.getPanel(),"clientes");
 
         OrdenGUI ordenGUI =new OrdenGUI();
@@ -45,24 +44,24 @@ public class MenuGUI {
         EmpleadosGUI empleadosGUI =new EmpleadosGUI();
         contenedorPanel.add(empleadosGUI.getPanel(), "empleados");
 
-/* codigo para asociar los botones al codigo anterior */
+        // Crear instancia de MainMenu
+        chatMainMenu = new MainMenu();
+        // Añadir el panel del MainMenu al contenedor
+        contenedorPanel.add(chatMainMenu.getMainPanel(), "chat");
 
+        /* codigo para asociar los botones al codigo anterior */
         clienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 CardLayout cliente = (CardLayout) (contenedorPanel.getLayout());
                 cliente.show(contenedorPanel,"clientes");
-
             }
         });
         ordenButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 CardLayout orden = (CardLayout) (contenedorPanel.getLayout());
                 orden.show(contenedorPanel,"orden");
-
             }
         });
         mesasButton.addActionListener(new ActionListener() {
@@ -72,7 +71,6 @@ public class MenuGUI {
                 mesas.show(contenedorPanel, "mesas");
             }
         });
-
         pedidosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -80,7 +78,6 @@ public class MenuGUI {
                 pedidos.show(contenedorPanel, "pedidos");
             }
         });
-
         produtosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -88,7 +85,6 @@ public class MenuGUI {
                 productos.show(contenedorPanel, "productos");
             }
         });
-
         empleadosButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,6 +93,14 @@ public class MenuGUI {
             }
         });
 
+        // ActionListener para el botón de chat
+        chatButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout chatLayout = (CardLayout) contenedorPanel.getLayout();
+                chatLayout.show(contenedorPanel, "chat");
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -105,5 +109,9 @@ public class MenuGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cerrar app al cerrar ventana
         frame.pack(); // Ajustar tamaño automáticamente
         frame.setVisible(true); // Mostrar ventana
+    }
+
+    public JPanel getMainPanel() {
+        return main;
     }
 }
