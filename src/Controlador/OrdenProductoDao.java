@@ -27,7 +27,7 @@ public class OrdenProductoDao {
      * @return true si se insertó correctamente, false si ocurrió un error
      */
     public boolean agregarOrdenProducto(Ordenes_Productos op) {
-        String sql = "INSERT INTO ordenes_productos (id_orden, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO orden_producto (id_orden, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setInt(1, op.getIdOrden());
             stmt.setInt(2, op.getIdProducto());
@@ -48,7 +48,7 @@ public class OrdenProductoDao {
      * @return true si se actualizó correctamente, false si ocurrió un error
      */
     public boolean editarOrdenProducto(Ordenes_Productos op) {
-        String sql = "UPDATE ordenes_productos SET cantidad = ?, precio_unitario = ? WHERE id_orden = ? AND id_producto = ?";
+        String sql = "UPDATE orden_producto SET cantidad = ?, precio_unitario = ? WHERE id_orden = ? AND id_producto = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setInt(1, op.getCantidad());
             stmt.setDouble(2, op.getPrecioUnitario());
@@ -70,7 +70,7 @@ public class OrdenProductoDao {
      * @return true si se eliminó correctamente, false si ocurrió un error
      */
     public boolean eliminarOrdenProducto(int idOrden, int idProducto) {
-        String sql = "DELETE FROM ordenes_productos WHERE id_orden = ? AND id_producto = ?";
+        String sql = "DELETE FROM orden_producto WHERE id_orden = ? AND id_producto = ?";
         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
             stmt.setInt(1, idOrden);
             stmt.setInt(2, idProducto);
@@ -88,7 +88,7 @@ public class OrdenProductoDao {
      */
     public List<Ordenes_Productos> obtenerTodos() {
         List<Ordenes_Productos> lista = new ArrayList<>();
-        String sql = "SELECT * FROM ordenes_productos";
+        String sql = "SELECT * FROM orden_producto";
         try (PreparedStatement stmt = conexion.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 

@@ -10,10 +10,10 @@ package Modelo;
  */
 public class Empleados {
     // Atributos privados que representan las columnas de la tabla empleados en la base de datos
-    private int id_empleado;
-    private String nombre;
-    private String cargo;
-    private String salario;
+    int id_empleado;
+    String nombre;
+    String cargo;
+    String salario;
 
     /**
      * Constructor con parámetros

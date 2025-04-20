@@ -5,61 +5,80 @@ import Modelo.Ordenes_Productos;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.*;
 import java.sql.*;
 import java.util.ArrayList;
 
-/**
- * Interfaz gráfica para gestionar la relación entre órdenes y productos.
- * Permite seleccionar una orden, agregar productos con cantidad y precio,
- * visualizar la tabla de productos agregados y guardar los datos en la base de datos.
- */
 public class Ordenes_ProductosGUI {
-    // Componentes visuales del formulario
-    private JPanel main;
-    private JComboBox<Integer> comboOrdenes;            // Lista de órdenes
-    private JComboBox<Integer> comboProductos;          // Lista de productos
-    private JTextField textFieldCantidad;               // Cantidad de productos
-    private JTextField textFieldPrecio;                 // Precio unitario del producto
-    private JButton agregarButton;                      // Botón para agregar a la tabla
-    private JTable tableOrden;                          // Tabla que muestra productos agregados
-    private JButton eliminarSeleccionadoButton;         // Botón para eliminar producto seleccionado
-    private JButton guardarOrdenButton;                 // Botón para guardar en BD
-    private JTextField textFieldNombreProducto;         // Campo para mostrar el nombre del producto
+    // Componentes de la interfaz de usuario
+    private JPanel main;  // Panel principal de la interfaz
+    private JComboBox<Integer> comboOrdenes;  // ComboBox para seleccionar la orden
+    private JComboBox<Integer> comboProductos;  // ComboBox para seleccionar el producto
+    private JTextField textFieldCantidad;  // Campo de texto para ingresar la cantidad del producto
+    private JTextField textFieldPrecio;  // Campo de texto para mostrar el precio del producto
+    private JButton agregarButton;  // Botón para agregar un producto a la orden
+    private JTable tableOrden;  // Tabla donde se muestran los productos agregados a la orden
+    private JButton eliminarSeleccionadoButton;  // Botón para eliminar el producto seleccionado en la tabla
+    private JButton guardarOrdenButton;  // Botón para guardar la orden en la base de datos
+    private JTextField textFieldNombreProducto;  // Campo de texto para mostrar el nombre del producto seleccionado
+    private JTable mostrarBD;  // Tabla para mostrar los registros guardados en la base de datos
+    private JButton eliminarBDButton;  // Botón para eliminar un registro de la base de datos
+    private JButton refrescarOrdenesButton;  // Botón para refrescar las órdenes
 
-    private DefaultTableModel tableModel;               // Modelo de tabla para JTable
-    private ConexionDB conexionDB = new ConexionDB();   // Conexión a la base de datos
-    private ArrayList<Ordenes_Productos> listaOrdenTemporal = new ArrayList<>(); // Lista temporal de productos agregados
+    // Conexión a la base de datos
+    private ConexionDB conexionDB = new ConexionDB();
+    private ArrayList<Ordenes_Productos> listaOrdenTemporal = new ArrayList<>();  // Lista temporal de productos en la orden
 
-    /**
-     * Constructor de la interfaz
-     */
     public Ordenes_ProductosGUI() {
-        // Inicializar el modelo de la tabla con columnas
-        tableModel = new DefaultTableModel(new Object[]{"Producto", "Cantidad", "Precio", "Subtotal"}, 0);
-        tableOrden.setModel(tableModel);
+        // Inicializa las tablas con DefaultTableModel y agrega las columnas
+        DefaultTableModel tableModelOrden = new DefaultTableModel();
+        tableModelOrden.addColumn("Producto");
+        tableModelOrden.addColumn("Cantidad");
+        tableModelOrden.addColumn("Precio");
+        tableModelOrden.addColumn("Subtotal");
+        tableOrden.setModel(tableModelOrden);
 
-        // Cargar datos en los combos
+        DefaultTableModel tableModelMostrarBD = new DefaultTableModel();
+        tableModelMostrarBD.addColumn("ID Orden");
+        tableModelMostrarBD.addColumn("ID Producto");
+        tableModelMostrarBD.addColumn("Cantidad");
+        tableModelMostrarBD.addColumn("Precio Unitario");
+        tableModelMostrarBD.addColumn("Subtotal");
+        mostrarBD.setModel(tableModelMostrarBD);
+
+        // Cargar los datos de órdenes y productos desde la base de datos
         cargarComboOrdenes();
         cargarComboProductos();
+        cargarDatosEnTablaMostrarBD();
 
-        // Eventos al interactuar con los componentes
+        // Acción para cargar los datos del producto seleccionado en el combo
         comboProductos.addActionListener(e -> cargarDatosProductoSeleccionado());
-        agregarButton.addActionListener(e -> agregarProductoATabla());
-        eliminarSeleccionadoButton.addActionListener(e -> eliminarProductoSeleccionado());
+
+        // Acción para agregar un producto a la tabla
+        agregarButton.addActionListener(e -> agregarProductoATabla(tableModelOrden));
+
+        // Acción para eliminar un producto de la tabla
+        eliminarSeleccionadoButton.addActionListener(e -> eliminarProductoSeleccionado(tableModelOrden));
+
+        // Acción para guardar la orden en la base de datos
         guardarOrdenButton.addActionListener(e -> guardarOrdenEnBD());
 
-        // El campo del nombre del producto es solo lectura
+        // Acción para eliminar un registro de la base de datos
+        eliminarBDButton.addActionListener(e -> eliminarRegistroBD());
+
+        // Acción para refrescar el combo de órdenes con el botón
+        refrescarOrdenesButton.addActionListener(e -> cargarComboOrdenes());
+
+        // Deshabilita la edición del nombre del producto
         textFieldNombreProducto.setEditable(false);
     }
 
-    /**
-     * Cargar los ID de las órdenes desde la base de datos al comboBox
-     */
+    // Método para cargar las órdenes en el JComboBox
     private void cargarComboOrdenes() {
+        comboOrdenes.removeAllItems();  // Limpia el combo antes de recargar
+
         try (Connection con = conexionDB.getConnection();
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id_orden FROM ordenes")) {
+             ResultSet rs = stmt.executeQuery("SELECT id_orden FROM orden")) {
 
             while (rs.next()) {
                 comboOrdenes.addItem(rs.getInt("id_orden"));
@@ -69,9 +88,7 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /**
-     * Cargar los ID de los productos desde la base de datos al comboBox
-     */
+    // Método para cargar los productos en el JComboBox
     private void cargarComboProductos() {
         try (Connection con = conexionDB.getConnection();
              Statement stmt = con.createStatement();
@@ -85,9 +102,7 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /**
-     * Al seleccionar un producto, cargar su nombre y precio desde la base de datos
-     */
+    // Método para cargar los detalles del producto seleccionado en los campos de texto
     private void cargarDatosProductoSeleccionado() {
         Integer idProducto = (Integer) comboProductos.getSelectedItem();
         if (idProducto == null) return;
@@ -110,77 +125,81 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /**
-     * Agrega el producto con su cantidad y precio a la tabla y a la lista temporal
-     */
-    private void agregarProductoATabla() {
+    // Método para agregar un producto a la tabla
+    private void agregarProductoATabla(DefaultTableModel tableModel) {
         try {
-            int idProducto = (Integer) comboProductos.getSelectedItem();
+            Integer idOrden = (Integer) comboOrdenes.getSelectedItem();
+            if (idOrden == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona una orden antes de agregar productos.");
+                return;
+            }
+
+            Integer idProducto = (Integer) comboProductos.getSelectedItem();
+            if (idProducto == null) {
+                JOptionPane.showMessageDialog(null, "Selecciona un producto válido.");
+                return;
+            }
+
             int cantidad = Integer.parseInt(textFieldCantidad.getText());
             double precio = Double.parseDouble(textFieldPrecio.getText());
             double subtotal = cantidad * precio;
 
-            // Mostrar en la tabla visual
-            tableModel.addRow(new Object[]{idProducto, cantidad, precio, subtotal});
+            // Agrega el producto a la tabla temporal y la lista
+            String[] dato = new String[4];
+            dato[0] = String.valueOf(idProducto);
+            dato[1] = String.valueOf(cantidad);
+            dato[2] = String.valueOf(precio);
+            dato[3] = String.valueOf(subtotal);
+            tableModel.addRow(dato);
 
-            // Guardar en la lista temporal
-            int idOrden = (Integer) comboOrdenes.getSelectedItem();
             listaOrdenTemporal.add(new Ordenes_Productos(idOrden, idProducto, cantidad, precio));
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Por favor ingresa valores válidos.");
         }
     }
 
-    /**
-     * Elimina el producto seleccionado de la tabla y de la lista temporal
-     */
-    private void eliminarProductoSeleccionado() {
-        // Obtenemos la fila seleccionada de la tabla
+    // Método para eliminar un producto seleccionado de la tabla
+    private void eliminarProductoSeleccionado(DefaultTableModel tableModel) {
         int selectedRow = tableOrden.getSelectedRow();
-
-        // Verificamos si hay una fila seleccionada
         if (selectedRow >= 0) {
-            // Confirmamos con el usuario antes de eliminar
             int confirm = JOptionPane.showConfirmDialog(null,
                     "¿Estás seguro de eliminar este producto de la orden?",
                     "Confirmar eliminación",
                     JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                // Eliminamos la fila de la tabla visual
                 tableModel.removeRow(selectedRow);
-
-                // También eliminamos el objeto de la lista temporal en memoria
                 listaOrdenTemporal.remove(selectedRow);
             }
-
         } else {
-            // Si no hay ninguna fila seleccionada, mostramos un mensaje
             JOptionPane.showMessageDialog(null, "Por favor, selecciona un producto de la tabla para eliminar.");
         }
     }
 
-
-    /**
-     * Guarda todos los productos agregados temporalmente en la base de datos
-     */
+    // Método para guardar la orden en la base de datos
     private void guardarOrdenEnBD() {
         try (Connection con = conexionDB.getConnection()) {
-            String sql = "INSERT INTO ordenes_productos (id_orden, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)";
+
+            String sql = "INSERT INTO orden_producto (id_orden, id_producto, cantidad, precio_unitario) " +
+                    "VALUES (?, ?, ?, ?) " +
+                    "ON DUPLICATE KEY UPDATE " +
+                    "cantidad = cantidad + VALUES(cantidad), " +
+                    "precio_unitario = VALUES(precio_unitario)";
+
             PreparedStatement ps = con.prepareStatement(sql);
 
+            // Inserta los productos de la orden en la base de datos
             for (Ordenes_Productos op : listaOrdenTemporal) {
                 ps.setInt(1, op.getIdOrden());
                 ps.setInt(2, op.getIdProducto());
                 ps.setInt(3, op.getCantidad());
                 ps.setDouble(4, op.getPrecioUnitario());
-                ps.addBatch(); // Añadir a lote
+                ps.addBatch();
             }
 
-            ps.executeBatch(); // Ejecutar lote de inserciones
+            ps.executeBatch();  // Ejecuta el batch para insertar todos los registros
             JOptionPane.showMessageDialog(null, "Orden guardada correctamente.");
-            tableModel.setRowCount(0);          // Limpiar tabla
-            listaOrdenTemporal.clear();         // Limpiar lista temporal
+            cargarDatosEnTablaMostrarBD();  // Recarga los datos en la tabla que muestra la base de datos
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -188,9 +207,84 @@ public class Ordenes_ProductosGUI {
         }
     }
 
-    /**
-     * Método principal para mostrar la ventana
-     */
+    // Método para cargar los datos de la base de datos en la tabla de la interfaz
+    private void cargarDatosEnTablaMostrarBD() {
+        DefaultTableModel modelMostrarBD = (DefaultTableModel) mostrarBD.getModel();
+        modelMostrarBD.setRowCount(0);  // Limpiar la tabla antes de cargar nuevos datos
+
+        String sql = "SELECT * FROM orden_producto";
+
+        try (Connection con = conexionDB.getConnection();
+             PreparedStatement pst = con.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
+
+            // Muestra los datos de la base de datos en la tabla
+            while (rs.next()) {
+                int idOrden = rs.getInt("id_orden");
+                int idProducto = rs.getInt("id_producto");
+                int cantidad = rs.getInt("cantidad");
+                double precioUnitario = rs.getDouble("precio_unitario");
+                double subtotal = cantidad * precioUnitario;
+
+                String[] dato = new String[5];
+                dato[0] = String.valueOf(idOrden);
+                dato[1] = String.valueOf(idProducto);
+                dato[2] = String.valueOf(cantidad);
+                dato[3] = String.valueOf(precioUnitario);
+                dato[4] = String.valueOf(subtotal);
+                modelMostrarBD.addRow(dato);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Método para eliminar un registro de la base de datos
+    private void eliminarRegistroBD() {
+        int selectedRow = mostrarBD.getSelectedRow();
+        if (selectedRow >= 0) {
+            int idOrden = (Integer) mostrarBD.getValueAt(selectedRow, 0);
+            int idProducto = (Integer) mostrarBD.getValueAt(selectedRow, 1);
+
+            int confirm = JOptionPane.showConfirmDialog(null,
+                    "¿Estás seguro de eliminar este registro de la base de datos?",
+                    "Confirmar eliminación",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                try (Connection con = conexionDB.getConnection()) {
+                    String sql = "DELETE FROM orden_producto WHERE id_orden = ? AND id_producto = ?";
+                    PreparedStatement pst = con.prepareStatement(sql);
+
+                    pst.setInt(1, idOrden);
+                    pst.setInt(2, idProducto);
+
+                    int rowsAffected = pst.executeUpdate();  // Elimina el registro de la base de datos
+                    if (rowsAffected > 0) {
+                        JOptionPane.showMessageDialog(null, "Registro eliminado correctamente.");
+                        DefaultTableModel modelMostrarBD = (DefaultTableModel) mostrarBD.getModel();
+                        modelMostrarBD.removeRow(selectedRow);  // Elimina el registro de la tabla
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No se encontró el registro.");
+                    }
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al eliminar el registro.");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Por favor, selecciona un registro para eliminar.");
+        }
+    }
+
+    // Método para obtener el panel principal
+    public JPanel getPanel() {
+        return main;
+    }
+
+    // Método main para ejecutar la interfaz
     public static void main(String[] args) {
         JFrame frame = new JFrame("Ordenes_ProductosGUI");
         frame.setContentPane(new Ordenes_ProductosGUI().main);

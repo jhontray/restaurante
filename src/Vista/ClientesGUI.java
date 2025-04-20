@@ -37,11 +37,11 @@ public class ClientesGUI {
         agregarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre= textField2.getText();
-                String telefono= textField3.getText();
-                String correo= textField4.getText();
+                String nombre = textField2.getText();
+                String telefono = textField3.getText();
+                String correo = textField4.getText();
 
-                Clientes clientes=new Clientes(1,nombre,telefono,correo);
+                Clientes clientes = new Clientes(1, nombre, telefono, correo);
                 clientesDAO.agregar(clientes);
 
 
@@ -57,13 +57,13 @@ public class ClientesGUI {
         editarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nombre= textField2.getText();
-                String telefono= textField3.getText();
-                String correo= textField4.getText();
+                String nombre = textField2.getText();
+                String telefono = textField3.getText();
+                String correo = textField4.getText();
                 int id = Integer.parseInt(textField1.getText());
 
 
-                Clientes clientes=new Clientes(id,nombre,telefono,correo);
+                Clientes clientes = new Clientes(id, nombre, telefono, correo);
                 clientesDAO.actualizar(clientes);
 
                 obtenerDatos();
@@ -78,8 +78,8 @@ public class ClientesGUI {
         eliminarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int id=Integer.parseInt(textField1.getText());
-                clientesDAO.eliminar (id);
+                int id = Integer.parseInt(textField1.getText());
+                clientesDAO.eliminar(id);
                 obtenerDatos();
 
             }
@@ -94,17 +94,23 @@ public class ClientesGUI {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                int selecFile=table1.getSelectedRow();
-                if (selecFile>=0)
-                {
-                    textField1.setText((String) table1.getValueAt(selecFile,0));
-                    textField2.setText((String) table1.getValueAt(selecFile,1));
-                    textField3.setText((String) table1.getValueAt(selecFile,2));
-                    textField4.setText((String) table1.getValueAt(selecFile,3));
+                int selecFile = table1.getSelectedRow();
+                if (selecFile >= 0) {
+                    textField1.setText((String) table1.getValueAt(selecFile, 0));
+                    textField2.setText((String) table1.getValueAt(selecFile, 1));
+                    textField3.setText((String) table1.getValueAt(selecFile, 2));
+                    textField4.setText((String) table1.getValueAt(selecFile, 3));
                 }
             }
         });
     }
+
+    /*permite aceso en  en la interfa menugui
+     */
+        public JPanel getPanel(){
+            return main;
+        }
+
 
     ConexionDB conexionDB = new ConexionDB();
 

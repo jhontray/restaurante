@@ -109,6 +109,13 @@ public class EmpleadosGUI {
         });
     }
 
+
+    /*permite aceso en  en la interfa menugui
+     */
+    public JPanel getPanel(){
+        return main;
+    }
+
     // Instancia de la clase que maneja la conexión a la base de datos
     ConexionDB conexionDB = new ConexionDB();
 
@@ -144,7 +151,7 @@ public class EmpleadosGUI {
             Statement stmt = con.createStatement();
 
             // Ejecutar la consulta y obtener los resultados
-            ResultSet rs = stmt.executeQuery("SELECT * FROM empleados");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM empleado");
 
             // Recorrer los resultados y agregarlos al modelo de la tabla
             while (rs.next()) {
