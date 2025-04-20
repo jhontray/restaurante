@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.util.List;
 
 public class MesasGUI extends JFrame {
+    private JPanel main; // 1. Añadir el JPanel main
     private JTable tablaMesas;
     private DefaultTableModel modelo;
     private MesasDao dao;
@@ -31,36 +32,47 @@ public class MesasGUI extends JFrame {
         setLocationRelativeTo(null);
         initComponents();
         cargarMesas();
+        // No necesitamos setVisible(true) aquí si se usa dentro de un CardLayout
     }
 
     private void initComponents() {
-        JPanel panel = new JPanel(new GridLayout(5, 2));
+        // 2. Inicializar el JPanel main
+        main = new JPanel(new BorderLayout());
 
-        panel.add(new JLabel("Número de Mesa:"));
+        JPanel panelFormulario = new JPanel(new GridLayout(5, 2));
+
+        panelFormulario.add(new JLabel("Número de Mesa:"));
         tfNumMesa = new JTextField();
-        panel.add(tfNumMesa);
+        panelFormulario.add(tfNumMesa);
 
-        panel.add(new JLabel("Capacidad:"));
+        panelFormulario.add(new JLabel("Capacidad:"));
         tfCapacidad = new JTextField();
-        panel.add(tfCapacidad);
+        panelFormulario.add(tfCapacidad);
 
-        panel.add(new JLabel("Estado:"));
+        panelFormulario.add(new JLabel("Estado:"));
         cbEstado = new JComboBox<>(new String[]{"Libre", "Ocupada", "Reservada"});
-        panel.add(cbEstado);
+        panelFormulario.add(cbEstado);
 
         btnAgregar = new JButton("Agregar");
         btnActualizar = new JButton("Actualizar");
         btnEliminar = new JButton("Eliminar");
-        panel.add(btnAgregar);
-        panel.add(btnActualizar);
-        panel.add(btnEliminar);
+        JPanel panelBotones = new JPanel(new FlowLayout());
+        panelBotones.add(btnAgregar);
+        panelBotones.add(btnActualizar);
+        panelBotones.add(btnEliminar);
+        panelFormulario.add(new JLabel("")); // Espacio en la grilla
+        panelFormulario.add(panelBotones);
 
         modelo = new DefaultTableModel(new String[]{"ID", "Número", "Capacidad", "Estado"}, 0);
         tablaMesas = new JTable(modelo);
         JScrollPane scroll = new JScrollPane(tablaMesas);
 
-        add(panel, BorderLayout.NORTH);
-        add(scroll, BorderLayout.CENTER);
+        // 3. Añadir componentes al JPanel main
+        main.add(panelFormulario, BorderLayout.NORTH);
+        main.add(scroll, BorderLayout.CENTER);
+
+        // Ya no añadimos directamente al JFrame
+        // add(main);
 
         btnAgregar.addActionListener(e -> agregarMesa());
         btnActualizar.addActionListener(e -> actualizarMesa());
@@ -144,8 +156,12 @@ public class MesasGUI extends JFrame {
         idSeleccionado = -1;
     }
 
+    // 4. Crear el método getMainPanel()
+    public JPanel getMainPanel() {
+        return main;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MesasGUI().setVisible(true));
     }
 }
-

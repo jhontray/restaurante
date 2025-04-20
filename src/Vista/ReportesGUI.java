@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ReportesGUI extends JFrame {
 
+    private JPanel main; // Agrega el JPanel main
     private JComboBox<String> tipoReporte;
     private JTextField campoFecha1, campoFecha2;
     private JButton btnBuscar;
@@ -24,6 +25,12 @@ public class ReportesGUI extends JFrame {
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dao = new ReportesDao();
+        initComponents();
+    }
+
+    private void initComponents() {
+        // Inicializa el JPanel main con un BorderLayout
+        main = new JPanel(new BorderLayout());
 
         tipoReporte = new JComboBox<>(new String[]{"Diario", "Semanal", "Mensual"});
         campoFecha1 = new JTextField(10);  // Fecha o Mes o Inicio
@@ -41,9 +48,14 @@ public class ReportesGUI extends JFrame {
 
         modelo = new DefaultTableModel(new String[]{"ID Orden", "Fecha", "Total"}, 0);
         tabla = new JTable(modelo);
+        JScrollPane scrollPaneTabla = new JScrollPane(tabla);
 
-        add(panelSuperior, BorderLayout.NORTH);
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
+        // Agrega los paneles al JPanel main
+        main.add(panelSuperior, BorderLayout.NORTH);
+        main.add(scrollPaneTabla, BorderLayout.CENTER);
+
+        // Ya no agregas directamente al JFrame
+        // add(main);
 
         btnBuscar.addActionListener(e -> cargarReporte());
     }
@@ -66,6 +78,11 @@ public class ReportesGUI extends JFrame {
         for (Reportes r : lista) {
             modelo.addRow(new Object[]{r.getIdOrden(), r.getFecha(), r.getTotal()});
         }
+    }
+
+    // Método para obtener el JPanel main
+    public JPanel getMainPanel() {
+        return main;
     }
 
     public static void main(String[] args) {

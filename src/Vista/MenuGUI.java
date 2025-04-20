@@ -16,14 +16,18 @@ public class MenuGUI {
     private JButton produtosButton;
     private JButton empleadosButton;
     private JButton chatButton; // El botón del chat
+    private JButton reportesButton; // El botón de Reportes
 
     private JPanel contenedorPanel;
     private MainMenu chatMainMenu; // Instancia de MainMenu
 
     public MenuGUI(){
+        // Inicializar el JPanel main
+        main = new JPanel(new BorderLayout()); // Puedes usar otro LayoutManager si lo prefieres
 
         /*permitiendo cambiar entre diferentes vistas*/
-        contenedorPanel.setLayout(new CardLayout());
+        contenedorPanel = new JPanel(new CardLayout()); // Inicializa contenedorPanel aquí
+        main.add(contenedorPanel, BorderLayout.CENTER); // Añade contenedorPanel al main
 
         /*se crea para ver la interfas del correspondiente gui*/
         ClientesGUI clientesGUI =new ClientesGUI();
@@ -36,7 +40,7 @@ public class MenuGUI {
         contenedorPanel.add(ordenesProductosGUI.getPanel(), "pedidos");
 
         MesasGUI mesasGUI =new MesasGUI();
-        contenedorPanel.add(mesasGUI.getPanel(), "mesas");
+        contenedorPanel.add(mesasGUI.getMainPanel(), "mesas"); // Usar getMainPanel()
 
         ProductosGUI productosGUI =new ProductosGUI();
         contenedorPanel.add(productosGUI.getPanel(), "productos");
@@ -48,6 +52,24 @@ public class MenuGUI {
         chatMainMenu = new MainMenu();
         // Añadir el panel del MainMenu al contenedor
         contenedorPanel.add(chatMainMenu.getMainPanel(), "chat");
+
+        // Crear instancia de ReportesGUI
+        ReportesGUI reportesGUI = new ReportesGUI();
+        // Añadir el panel de ReportesGUI al contenedor
+        contenedorPanel.add(reportesGUI.getMainPanel(), "reportes");
+
+        // Crear panel para los botones del menú principal
+        JPanel menuBotonesPanel = new JPanel(new FlowLayout());
+        menuBotonesPanel.add(mesasButton);
+        menuBotonesPanel.add(ordenButton);
+        menuBotonesPanel.add(clienteButton);
+        menuBotonesPanel.add(pedidosButton);
+        menuBotonesPanel.add(produtosButton);
+        menuBotonesPanel.add(empleadosButton);
+        menuBotonesPanel.add(chatButton);
+        menuBotonesPanel.add(reportesButton); // Añadir el botón de Reportes
+        main.add(menuBotonesPanel, BorderLayout.NORTH); // Añadir panel de botones al main
+
 
         /* codigo para asociar los botones al codigo anterior */
         clienteButton.addActionListener(new ActionListener() {
@@ -99,6 +121,15 @@ public class MenuGUI {
             public void actionPerformed(ActionEvent e) {
                 CardLayout chatLayout = (CardLayout) contenedorPanel.getLayout();
                 chatLayout.show(contenedorPanel, "chat");
+            }
+        });
+
+        // ActionListener para el botón de Reportes
+        reportesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout reportesLayout = (CardLayout) contenedorPanel.getLayout();
+                reportesLayout.show(contenedorPanel, "reportes");
             }
         });
     }
