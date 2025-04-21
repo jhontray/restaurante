@@ -50,7 +50,7 @@ public class MesasGUI extends JFrame {
         panelFormulario.add(tfCapacidad);
 
         panelFormulario.add(new JLabel("Estado:"));
-        cbEstado = new JComboBox<>(new String[]{"Libre", "Ocupada", "Reservada"});
+        cbEstado = new JComboBox<>(new String[]{"Disponible", "Ocupada", "Reservada"});
         panelFormulario.add(cbEstado);
 
         btnAgregar = new JButton("Agregar");
