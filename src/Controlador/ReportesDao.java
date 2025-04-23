@@ -2,6 +2,7 @@ package Controlador;
 
 import Conexion.ConexionDB;
 import Modelo.Reportes;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,4 +81,62 @@ public class ReportesDao {
 
         return reportes;
     }
+
+    // NUEVO: Producto más vendido
+    public List<Reportes> obtenerProductoMasVendido() {
+        String sql = "SELECT p.nombre, SUM(op.cantidad) AS total_vendido " +
+                "FROM Productos p " +
+                "JOIN Ordenes_Productos op ON p.id_producto = op.id_producto " +
+                "GROUP BY p.nombre " +
+                "ORDER BY total_vendido DESC " +
+                "LIMIT 1";
+
+        List<Reportes> reportes = new ArrayList<>();
+
+        try (Connection conn = ConexionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                reportes.add(new Reportes(
+                        rs.getString("nombre"),
+                        rs.getDouble("total_vendido")
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener producto más vendido: " + e.getMessage());
+        }
+
+        return reportes;
+    }
+
+    // NUEVO: Clientes que más compran
+    public List<Reportes> obtenerClientesQueMasCompran() {
+        String sql = "SELECT c.nombre, SUM(o.total) AS total_comprado " +
+                "FROM Clientes c " +
+                "JOIN Orden o ON c.id_cliente = o.id_cliente " +
+                "GROUP BY c.nombre " +
+                "ORDER BY total_comprado DESC";
+
+        List<Reportes> reportes = new ArrayList<>();
+
+        try (Connection conn = ConexionDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                reportes.add(new Reportes(
+                        rs.getString("nombre"),
+                        rs.getDouble("total_comprado")
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener clientes que más compran: " + e.getMessage());
+        }
+
+        return reportes;
+    }
 }
+

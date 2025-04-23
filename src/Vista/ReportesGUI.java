@@ -6,65 +6,115 @@ import Modelo.Reportes;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class ReportesGUI extends JFrame {
 
-    private JComboBox<String> tipoReporte;
-    private JTextField campoFecha1, campoFecha2;
+public class ReportesGUI extends JFrame {
+    private JPanel panelPrincipal;
+    private JTable tablaReportes;
+    private JTextField campoFecha1;
+    private JTextField campoFecha2;
+    //private JTextField txtMes;
     private JButton btnBuscar;
-    private JTable tabla;
-    private DefaultTableModel modelo;
-    private ReportesDao dao;
-    private JTable table1;
+    //private JButton btnSemanal;
+    //private JButton btnMensual;
+    private JButton btnProductoMasVendido;
+    private JButton btnClientesQueMasCompran;
+    private DefaultTableModel modeloTabla;
+    private final ReportesDao dao;
 
     public ReportesGUI() {
-        setTitle("Reportes de Ventas");
-        setSize(600, 400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         dao = new ReportesDao();
-
-        tipoReporte = new JComboBox<>(new String[]{"Diario", "Semanal", "Mensual"});
-        campoFecha1 = new JTextField(10);  // Fecha o Mes o Inicio
-        campoFecha2 = new JTextField(10);  // Fin (solo para semanal)
-        btnBuscar = new JButton("Buscar");
-
-        JPanel panelSuperior = new JPanel();
-        panelSuperior.add(new JLabel("Tipo:"));
-        panelSuperior.add(tipoReporte);
-        panelSuperior.add(new JLabel("Fecha 1:"));
-        panelSuperior.add(campoFecha1);
-        panelSuperior.add(new JLabel("Fecha 2:"));
-        panelSuperior.add(campoFecha2);
-        panelSuperior.add(btnBuscar);
-
-        modelo = new DefaultTableModel(new String[]{"ID Orden", "Fecha", "Total"}, 0);
-        tabla = new JTable(modelo);
-
-        add(panelSuperior, BorderLayout.NORTH);
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
-
-        btnBuscar.addActionListener(e -> cargarReporte());
+        setTitle("Reportes del Restaurante");
+        setSize(800, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initComponents();
+        initListeners();
     }
 
-    private void cargarReporte() {
-        modelo.setRowCount(0);
-        String tipo = tipoReporte.getSelectedItem().toString();
-        String fecha1 = campoFecha1.getText();
-        String fecha2 = campoFecha2.getText();
-        List<Reportes> lista;
+    private void initComponents() {
+        // Formato de fecha
+        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        String fechaHoy = LocalDate.now().format(formatoFecha);
 
-        if (tipo.equals("Diario")) {
-            lista = dao.obtenerReporteDiario(fecha1);
-        } else if (tipo.equals("Semanal")) {
-            lista = dao.obtenerReporteSemanal(fecha1, fecha2);
-        } else {
-            lista = dao.obtenerReporteMensual(fecha1);
+        // Inicializar fechas por defecto (ejemplo: ambos campos con la fecha de hoy)
+        campoFecha1.setText(fechaHoy);
+        campoFecha2.setText(fechaHoy);
+
+        // Configurar modelo de tabla
+        modeloTabla = new DefaultTableModel();
+        tablaReportes.setModel(modeloTabla);
+        mostrarReporteDiario();
+
+        add(panelPrincipal);
+
+    }
+
+    private void initListeners() {
+        //mostrarReporteGeneral
+        btnBuscar.addActionListener((ActionEvent e) -> mostrarReporteGeneral());
+        btnProductoMasVendido.addActionListener((ActionEvent e) -> mostrarProductoMasVendido());
+        btnClientesQueMasCompran.addActionListener((ActionEvent e) -> mostrarClientesQueMasCompran());
+    }
+
+    private void mostrarReporteDiario() {
+        String fecha =  obtenerFechaActual();
+        List<Reportes> lista = dao.obtenerReporteDiario(fecha);
+        cargarTablaOrdenes(lista);
+    }
+
+    private String obtenerFechaActual() {
+        LocalDate fechaActual = LocalDate.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        return fechaActual.format(formato);
+    }
+
+    private void mostrarReporteGeneral() {
+        String inicio = campoFecha1.getText();
+        String fin = campoFecha2.getText();
+
+        if(inicio!=null && !inicio.isEmpty() && fin!=null && !fin.isEmpty()){
+            List<Reportes> lista = dao.obtenerReporteSemanal(inicio, fin);
+            cargarTablaOrdenes(lista);
+        }else {
+            mostrarReporteDiario();
         }
 
-        for (Reportes r : lista) {
-            modelo.addRow(new Object[]{r.getIdOrden(), r.getFecha(), r.getTotal()});
+    }
+
+    /*private void mostrarReporteMensual() {
+        String mes = txtMes.getText();
+        List<Reportes> lista = dao.obtenerReporteMensual(mes);
+        cargarTablaOrdenes(lista);
+    }*/
+
+    private void mostrarProductoMasVendido() {
+        var lista = dao.obtenerProductoMasVendido();
+        modeloTabla.setRowCount(0);
+        modeloTabla.setColumnIdentifiers(new String[]{"Producto", "Cantidad"});
+        for (var prod : lista) {
+            modeloTabla.addRow(new Object[]{prod.getIdOrden(), prod.getTotal()});
+        }
+    }
+
+    private void mostrarClientesQueMasCompran() {
+        var lista = dao.obtenerClientesQueMasCompran();
+        modeloTabla.setRowCount(0);
+        modeloTabla.setColumnIdentifiers(new String[]{"Cliente", "Total Comprado"});
+        for (var cliente : lista) {
+            modeloTabla.addRow(new Object[]{cliente.getNombre(), cliente.getTotal()});
+        }
+    }
+
+    private void cargarTablaOrdenes(List<Reportes> lista) {
+        modeloTabla.setRowCount(0);
+        modeloTabla.setColumnIdentifiers(new String[]{"ID Orden", "Fecha", "Total"});
+        for (Reportes rep : lista) {
+            modeloTabla.addRow(new Object[]{rep.getIdOrden(), rep.getFecha(), rep.getTotal()});
         }
     }
 
@@ -72,3 +122,4 @@ public class ReportesGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new ReportesGUI().setVisible(true));
     }
 }
+

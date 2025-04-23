@@ -17,7 +17,7 @@
         </properties>
         <border type="none" title="Mesas"/>
         <children>
-          <component id="5e69" class="javax.swing.JTable" binding="mesas">
+          <component id="5e69" class="javax.swing.JTable" binding="tablaMesas">
             <constraints/>
             <properties/>
           </component>

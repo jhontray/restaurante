@@ -35,8 +35,8 @@ public class MenuGUI {
         Ordenes_ProductosGUI ordenesProductosGUI =new Ordenes_ProductosGUI();
         contenedorPanel.add(ordenesProductosGUI.getPanel(), "pedidos");
 
-        MesasGUI mesasGUI =new MesasGUI();
-        contenedorPanel.add(mesasGUI.getPanel(), "mesas");
+        MesasGUI MesasGUI =new MesasGUI();
+        contenedorPanel.add(MesasGUI.getPanel(), "mesas");
 
         ProductosGUI productosGUI =new ProductosGUI();
         contenedorPanel.add(productosGUI.getPanel(), "productos");

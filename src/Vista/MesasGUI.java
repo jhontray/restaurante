@@ -15,7 +15,7 @@ public class MesasGUI extends JFrame {
     private MesasDao dao;
     private int idSeleccionado = -1;
     private JPanel Principal;
-    private JTable mesas;
+    private JTable Mesas;
     private JButton btnAgregar;
     private JButton btnEliminar;
     private JButton btnActualizar;
@@ -146,6 +146,10 @@ public class MesasGUI extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new MesasGUI().setVisible(true));
+    }
+
+    public Component getPanel() {
+        return null;
     }
 }
 
