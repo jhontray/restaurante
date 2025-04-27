@@ -18,6 +18,7 @@ public class MenuGUI {
     private JButton chatButton; // El botón del chat
 
     private JPanel contenedorPanel;
+    private JButton reportesButton;
     private MainMenu chatMainMenu; // Instancia de MainMenu
 
     public MenuGUI(){
@@ -43,6 +44,9 @@ public class MenuGUI {
 
         EmpleadosGUI empleadosGUI =new EmpleadosGUI();
         contenedorPanel.add(empleadosGUI.getPanel(), "empleados");
+
+        ReportesGUI reportesGUI =new ReportesGUI();
+        contenedorPanel.add(reportesGUI.getPanel(),"reportes");
 
         // Crear instancia de MainMenu
         chatMainMenu = new MainMenu();
@@ -101,6 +105,15 @@ public class MenuGUI {
                 chatLayout.show(contenedorPanel, "chat");
             }
         });
+
+        // ActionListener para el botón de chat
+        reportesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout chatLayout = (CardLayout) contenedorPanel.getLayout();
+                chatLayout.show(contenedorPanel, "reportes");
+            }
+        });
     }
 
     public static void main(String[] args) {
@@ -111,7 +124,7 @@ public class MenuGUI {
         frame.setVisible(true); // Mostrar ventana
     }
 
-    public JPanel getMainPanel() {
+    public JPanel getMain() {
         return main;
     }
 }

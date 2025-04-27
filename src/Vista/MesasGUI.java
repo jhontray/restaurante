@@ -14,7 +14,7 @@ public class MesasGUI extends JFrame {
     private DefaultTableModel modelo;
     private MesasDao dao;
     private int idSeleccionado = -1;
-    private JPanel Principal;
+    private JPanel main;
     private JTable Mesas;
     private JButton btnAgregar;
     private JButton btnEliminar;
@@ -136,6 +136,9 @@ public class MesasGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Seleccione una mesa para eliminar");
         }
     }
+    public JPanel getPanel(){
+        return main;
+    }
 
     private void limpiarCampos() {
         tfNumMesa.setText("");
@@ -148,8 +151,6 @@ public class MesasGUI extends JFrame {
         SwingUtilities.invokeLater(() -> new MesasGUI().setVisible(true));
     }
 
-    public Component getPanel() {
-        return null;
-    }
+
 }
 

@@ -2,7 +2,10 @@ package Controlador;
 
 import Conexion.ConexionDB;
 import Modelo.Reportes;
+import Vista.EmpleadosGUI;
+import Vista.ReportesGUI;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +89,7 @@ public class ReportesDao {
     public List<Reportes> obtenerProductoMasVendido() {
         String sql = "SELECT p.nombre, SUM(op.cantidad) AS total_vendido " +
                 "FROM Productos p " +
-                "JOIN Ordenes_Productos op ON p.id_producto = op.id_producto " +
+                "JOIN Orden_Producto op ON p.id_producto = op.id_producto " +
                 "GROUP BY p.nombre " +
                 "ORDER BY total_vendido DESC " +
                 "LIMIT 1";

@@ -13,7 +13,7 @@ import java.util.List;
 
 
 public class ReportesGUI extends JFrame {
-    private JPanel panelPrincipal;
+    private JPanel main;
     private JTable tablaReportes;
     private JTextField campoFecha1;
     private JTextField campoFecha2;
@@ -50,7 +50,7 @@ public class ReportesGUI extends JFrame {
         tablaReportes.setModel(modeloTabla);
         mostrarReporteDiario();
 
-        add(panelPrincipal);
+        add(main);
 
     }
 
@@ -117,9 +117,18 @@ public class ReportesGUI extends JFrame {
             modeloTabla.addRow(new Object[]{rep.getIdOrden(), rep.getFecha(), rep.getTotal()});
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ReportesGUI().setVisible(true));
+    public JPanel getPanel(){
+        return main;
     }
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("ReportesGUI"); // Crear ventana con título
+        frame.setContentPane(new ReportesGUI().main); // Establecer panel principal
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cerrar app al cerrar ventana
+        frame.pack(); // Ajustar tamaño automáticamente
+        frame.setVisible(true); // Mostrar ventana
+    }
+
 }
+
+
 
