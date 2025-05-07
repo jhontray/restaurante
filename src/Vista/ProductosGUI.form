@@ -117,11 +117,9 @@
           <text value="Eliminar"/>
         </properties>
       </component>
-      <component id="bbe57" class="javax.swing.JList" binding="list1" default-binding="true">
+      <component id="97bc2" class="javax.swing.JComboBox" binding="comboBoxDisponibilidad">
         <constraints>
-          <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
+          <grid row="5" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
       </component>

@@ -11,16 +11,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
 public class ReportesGUI extends JFrame {
     private JPanel main;
     private JTable tablaReportes;
     private JTextField campoFecha1;
     private JTextField campoFecha2;
-    //private JTextField txtMes;
     private JButton btnBuscar;
-    //private JButton btnSemanal;
-    //private JButton btnMensual;
     private JButton btnProductoMasVendido;
     private JButton btnClientesQueMasCompran;
     private DefaultTableModel modeloTabla;
@@ -37,32 +33,57 @@ public class ReportesGUI extends JFrame {
     }
 
     private void initComponents() {
-        // Formato de fecha
+        // Crear panel principal y layout
+        main = new JPanel(new BorderLayout());
+
+        // Panel superior con filtros
+        JPanel panelSuperior = new JPanel();
+        panelSuperior.setLayout(new FlowLayout());
+
+        campoFecha1 = new JTextField(10);
+        campoFecha2 = new JTextField(10);
+        btnBuscar = new JButton("Buscar");
+        btnProductoMasVendido = new JButton("Producto más vendido");
+        btnClientesQueMasCompran = new JButton("Clientes que más compran");
+
+        // Formato de fecha actual
         DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         String fechaHoy = LocalDate.now().format(formatoFecha);
-
-        // Inicializar fechas por defecto (ejemplo: ambos campos con la fecha de hoy)
         campoFecha1.setText(fechaHoy);
         campoFecha2.setText(fechaHoy);
 
-        // Configurar modelo de tabla
+        panelSuperior.add(new JLabel("Fecha inicio:"));
+        panelSuperior.add(campoFecha1);
+        panelSuperior.add(new JLabel("Fecha fin:"));
+        panelSuperior.add(campoFecha2);
+        panelSuperior.add(btnBuscar);
+        panelSuperior.add(btnProductoMasVendido);
+        panelSuperior.add(btnClientesQueMasCompran);
+
+        // Tabla para reportes
         modeloTabla = new DefaultTableModel();
-        tablaReportes.setModel(modeloTabla);
+        tablaReportes = new JTable(modeloTabla);
+        JScrollPane scrollPane = new JScrollPane(tablaReportes);
+
+        // Agregar al panel principal
+        main.add(panelSuperior, BorderLayout.NORTH);
+        main.add(scrollPane, BorderLayout.CENTER);
+
+        // Mostrar reporte diario por defecto
         mostrarReporteDiario();
 
+        // Agregar main panel a la ventana
         add(main);
-
     }
 
     private void initListeners() {
-        //mostrarReporteGeneral
         btnBuscar.addActionListener((ActionEvent e) -> mostrarReporteGeneral());
         btnProductoMasVendido.addActionListener((ActionEvent e) -> mostrarProductoMasVendido());
         btnClientesQueMasCompran.addActionListener((ActionEvent e) -> mostrarClientesQueMasCompran());
     }
 
     private void mostrarReporteDiario() {
-        String fecha =  obtenerFechaActual();
+        String fecha = obtenerFechaActual();
         List<Reportes> lista = dao.obtenerReporteDiario(fecha);
         cargarTablaOrdenes(lista);
     }
@@ -77,35 +98,28 @@ public class ReportesGUI extends JFrame {
         String inicio = campoFecha1.getText();
         String fin = campoFecha2.getText();
 
-        if(inicio!=null && !inicio.isEmpty() && fin!=null && !fin.isEmpty()){
+        if (inicio != null && !inicio.isEmpty() && fin != null && !fin.isEmpty()) {
             List<Reportes> lista = dao.obtenerReporteSemanal(inicio, fin);
             cargarTablaOrdenes(lista);
-        }else {
+        } else {
             mostrarReporteDiario();
         }
-
     }
 
-    /*private void mostrarReporteMensual() {
-        String mes = txtMes.getText();
-        List<Reportes> lista = dao.obtenerReporteMensual(mes);
-        cargarTablaOrdenes(lista);
-    }*/
-
     private void mostrarProductoMasVendido() {
-        var lista = dao.obtenerProductoMasVendido();
+        List<Reportes> lista = dao.obtenerProductoMasVendido();
         modeloTabla.setRowCount(0);
         modeloTabla.setColumnIdentifiers(new String[]{"Producto", "Cantidad"});
-        for (var prod : lista) {
-            modeloTabla.addRow(new Object[]{prod.getIdOrden(), prod.getTotal()});
+        for (Reportes prod : lista) {
+            modeloTabla.addRow(new Object[]{prod.getNombre(), prod.getTotal()});
         }
     }
 
     private void mostrarClientesQueMasCompran() {
-        var lista = dao.obtenerClientesQueMasCompran();
+        List<Reportes> lista = dao.obtenerClientesQueMasCompran();
         modeloTabla.setRowCount(0);
         modeloTabla.setColumnIdentifiers(new String[]{"Cliente", "Total Comprado"});
-        for (var cliente : lista) {
+        for (Reportes cliente : lista) {
             modeloTabla.addRow(new Object[]{cliente.getNombre(), cliente.getTotal()});
         }
     }
@@ -117,18 +131,17 @@ public class ReportesGUI extends JFrame {
             modeloTabla.addRow(new Object[]{rep.getIdOrden(), rep.getFecha(), rep.getTotal()});
         }
     }
-    public JPanel getPanel(){
+
+    public JPanel getPanel() {
         return main;
     }
+
     public static void main(String[] args) {
-        JFrame frame = new JFrame("ReportesGUI"); // Crear ventana con título
-        frame.setContentPane(new ReportesGUI().main); // Establecer panel principal
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Cerrar app al cerrar ventana
-        frame.pack(); // Ajustar tamaño automáticamente
-        frame.setVisible(true); // Mostrar ventana
+        SwingUtilities.invokeLater(() -> {
+            ReportesGUI ventana = new ReportesGUI();
+            ventana.setVisible(true);
+        });
     }
-
 }
-
 
 

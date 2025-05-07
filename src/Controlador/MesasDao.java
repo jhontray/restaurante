@@ -31,7 +31,7 @@ public class MesasDao {
 
     public List<Mesas> obtenerMesas() {
         List<Mesas> mesas = new ArrayList<>();
-        String sql = "SELECT * FROM Mesa";
+        String sql = "SELECT * FROM mesa";
         try (Connection conn = conexionDB.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -53,7 +53,7 @@ public class MesasDao {
     }
 
     public boolean actualizarMesa(Mesas mesa) {
-        String sql = "UPDATE Mesa SET numero=?, capacidad=?, estado=? WHERE id_mesa=?";
+        String sql = "UPDATE mesa SET numero=?, capacidad=?, estado=? WHERE id_mesa=?";
         try (Connection conn = conexionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, mesa.getNumero());
@@ -69,7 +69,7 @@ public class MesasDao {
     }
 
     public boolean eliminarMesa(int id) {
-        String sql = "DELETE FROM Mesa WHERE id_mesa=?";
+        String sql = "DELETE FROM mesa WHERE id_mesa=?";
         try (Connection conn = conexionDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);

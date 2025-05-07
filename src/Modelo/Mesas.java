@@ -36,7 +36,7 @@ public class Mesas {
 
     @Override
     public String toString() {
-        return "Mesas " + numero + " (Cap: " + capacidad + ", Estado: " + estado + ")";
+        return "Mesa " + numero + " (Cap: " + capacidad + ", Estado: " + estado + ")";
     }
 }
 

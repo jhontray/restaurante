@@ -2,10 +2,7 @@ package Controlador;
 
 import Conexion.ConexionDB;
 import Modelo.Reportes;
-import Vista.EmpleadosGUI;
-import Vista.ReportesGUI;
 
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +82,7 @@ public class ReportesDao {
         return reportes;
     }
 
-    // NUEVO: Producto más vendido
+    // Producto más vendido
     public List<Reportes> obtenerProductoMasVendido() {
         String sql = "SELECT p.nombre, SUM(op.cantidad) AS total_vendido " +
                 "FROM Productos p " +
@@ -101,10 +98,10 @@ public class ReportesDao {
              ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
-                reportes.add(new Reportes(
-                        rs.getString("nombre"),
-                        rs.getDouble("total_vendido")
-                ));
+                String nombre = rs.getString("nombre");
+                double totalVendido = rs.getDouble("total_vendido");
+
+                reportes.add(new Reportes(nombre, totalVendido));
             }
 
         } catch (SQLException e) {
@@ -114,7 +111,7 @@ public class ReportesDao {
         return reportes;
     }
 
-    // NUEVO: Clientes que más compran
+    // Clientes que más compran
     public List<Reportes> obtenerClientesQueMasCompran() {
         String sql = "SELECT c.nombre, SUM(o.total) AS total_comprado " +
                 "FROM Clientes c " +
@@ -129,10 +126,10 @@ public class ReportesDao {
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                reportes.add(new Reportes(
-                        rs.getString("nombre"),
-                        rs.getDouble("total_comprado")
-                ));
+                String nombre = rs.getString("nombre");
+                double totalComprado = rs.getDouble("total_comprado");
+
+                reportes.add(new Reportes(nombre, totalComprado));
             }
 
         } catch (SQLException e) {
@@ -142,4 +139,5 @@ public class ReportesDao {
         return reportes;
     }
 }
+
 

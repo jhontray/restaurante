@@ -26,7 +26,7 @@ public class EmpleadosDao {
      */
     public void agregar(Empleados empleados) {
         Connection con = conexionDB.getConnection();
-        String query = "INSERT INTO empleados (nombre, cargo, salario) VALUES (?, ?, ?)";
+        String query = "INSERT INTO empleado (nombre, cargo, salario) VALUES (?, ?, ?)";
 
         try {
             // Preparar la sentencia SQL con los datos del objeto empleado
@@ -57,7 +57,7 @@ public class EmpleadosDao {
      */
     public void editar(Empleados empleados) {
         Connection con = conexionDB.getConnection();
-        String query = "UPDATE empleados SET nombre = ?, cargo = ?, salario = ? WHERE id_empleado = ?";
+        String query = "UPDATE empleado SET nombre = ?, cargo = ?, salario = ? WHERE id_empleado = ?";
 
         try {
             // Preparar la sentencia SQL con los nuevos datos
@@ -89,7 +89,7 @@ public class EmpleadosDao {
      */
     public void eliminar(int id) {
         Connection con = conexionDB.getConnection();
-        String query = "DELETE FROM empleados WHERE id_empleado = ?";
+        String query = "DELETE FROM empleado WHERE id_empleado = ?";
 
         try {
             // Preparar y ejecutar la sentencia de eliminación

@@ -25,7 +25,7 @@ public class MesasGUI extends JFrame {
 
     public MesasGUI() {
         dao = new MesasDao();
-        setTitle("Gestión de Mesas");
+        setTitle("Gestión de mesas");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -36,7 +36,7 @@ public class MesasGUI extends JFrame {
     private void initComponents() {
         JPanel panel = new JPanel(new GridLayout(5, 2));
 
-        panel.add(new JLabel("Número de Mesa:"));
+        panel.add(new JLabel("Número de  mesa:"));
         tfNumMesa = new JTextField();
         panel.add(tfNumMesa);
 
